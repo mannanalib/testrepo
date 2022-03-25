@@ -1,0 +1,34 @@
+create table
+like 
+LOAD DATA LOCAL INFILE '/mnt/home/mannanbaigtigeranalytics/Project/StockPrices.csv' INTO TABLE Stock_Prices FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+create table STOCK_PRICES(Trading_date DATE, Symbol varchar(30), Open double, Close double, Low double, High double, Volume double);
+
+create tableSTOCK_PRICES(Trading_date DATE, Symbol varchar(30), Open double, Close double, Low double, High double, Volume double)load data local infile '/mnt/home/StockPrices.csv' into table STOCK_PRICES FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+load data local infile 'Stockcompanies.csv' into table STOCK_COMPANIES FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+load data local infile 'StockPrices.csv' into table STOCK_PRICES FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table STOCK_COMPANIES --target-dir projectData/STOCK_COMPANIES/ --columns Symbol,Company_name,Sector,Sub_industry,Headquarter -m1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table STOCK_PRICES --target-dir projectData/STOCK_PRICES/ --columns Trading_date,Symbol,Open,Close,Low,High,Volume -m1
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/yuvarajkarthiketigeranaly --username yuvarajkarthiketigeranaly --password yuvarajkarthiketigeranalyianeh --table stock_companies --target-dir HDFSAssessmentDataset/StockCompanies/ --columns Symbol,Company_name,Sector,Sub_industry,Headquarter -m1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/aratimunottigeranalytics --username aratimunottigeranalytics --password aratimunottigeranalyticsdy3h2 --table STOCK_PRICES --target-dir projectData/STOCK_PRICES -m 1
+
+
+
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table STOCK_COMPANIES --hive-import -hive-database mab --m1
+
+create external table STOCK_PRICESs(Trading_date DATE, Symbol varchar(30), Open double, Close double, Low double, High double, Volume int)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' LOCATION '/user/mannanbaigtigeranalytics/projectData';
+
+
+
+LOAD DATA LOCAL INPATH 'StockPrices.csv' INTO TABLE STOCK_PRICESs;
+
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --columns Symbol,Company_name,Sector,Sub_industry,Headquarter --table STOCK_COMPANIES  --target-dir projectData/STOCK_COMPANIE --fields-terminated-by "," --hive-import --create-hive-table --hive-table mab.STOCK_COMPANIES
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --columns Trading_date,Symbol,Open,Close,Low,High,Volume --table STOCK_PRICES  --target-dir projectData/STOCK_PRICE --fields-terminated-by "," --hive-import --create-hive-table --hive-table mab.STOCK_PRICES

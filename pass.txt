@@ -1,0 +1,80 @@
+import re
+class BasePasswordManager:
+
+    def old_passwords(self):
+        old_password = ['root@1234']
+        self.old_password = old_password[-1]
+        return self.old_password
+    
+    def get_password(self):
+        current_password = self.old_password
+        self.current_password = current_password
+        return "Current password is " + self.current_password
+        
+
+    def is_correct(self, password=input('please type in your password: ')):
+        self.password = password
+        print("New passsword is the same as the current password:",self.password == self.current_password)
+        return self.password
+
+class PasswordManager(BasePasswordManager):
+
+    def get_level(self):
+        self.security_level = 0
+        check_alphabet = False
+        check_number = False
+        if self.password.isdigit():
+            self.security_level = 0
+            print('Security level is',self.security_level,' :WEAK')
+            print('Password consists of Digits only')
+
+        elif self.password.isalpha():
+            self.security_level = 0 
+            print('Security level is',self.security_level,' :WEAK')
+            print('Password consists of Alphabets only')
+
+        elif check_alphabet == False and check_number == False and (bool(re.match('^[a-zA-Z0-9]*$@', self.password)) == True):
+            for i in self.password:
+                if i.isalpha():
+                    check_alphabet = True
+            for j in self.password:
+                if j.isnumeric():
+                    check_number = True
+                if check_alphabet == True and check_number == True:
+                    self.security_level = 1 
+                    print('Security Level is', self.security_level, ': MODERATE')
+                    print('Password is alphanumeric with NO special characters')
+
+                elif check_alphabet == False and check_number == False:
+                    for i in self.password:
+                        if i.isalpha():
+                            check_alphabet = True
+                    for j in self.password:
+                        if j.isnumeric():
+                            check_number = True
+                    if check_alphabet == True and check_number == True and (bool(re.match('^[a-zA-Z0-9]*$@', self.password)) == False):
+                        self.security_level = 2 
+                        print('Security level is', self.security_level, ':STRONG')
+                        print('Password is alphanumeric with special characters')
+                    else:
+                        self.security_level = 1
+
+                        print('Security level is', self.security_level, ': MODERATE')
+                        print('Password contains special characters with either numbers or alphabets only')
+
+    def set_password(self):
+        if len(self.password) <6:
+            print("New Password must have 6 characters or More")
+            print("Password Change : UNSUCCESSFUL")
+        elif self.password == self.current_password:
+            print("Password Change: No Changes Detected")
+        else:
+            print("Password Change:SUCCESS")
+            print()
+
+current = PasswordManager()
+current.old_passwords()
+current.get_password()
+current.is_correct()
+current.get_level()
+current.set_password()

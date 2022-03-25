@@ -1,0 +1,60 @@
+logpublib logdata log.csv
+
+# Lab - Spark Pool - Load data
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+account_name = "storee2"
+container_name = "logpublic"
+relative_path = "logdata"
+adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path)
+spark.conf.set("fs.azure.account.auth.type.%s.dfs.core.windows.net" %account_name, "SharedKey")
+spark.conf.set("fs.azure.account.key.%s.dfs.core.windows.net" %account_name ,"WzJUzTZslXiJREQSFJh7Pxx7C53ILW4LNu4HLGCfNbJcsrTBoyuwtyGRVhJiMGABzD5A/xvwirjE+AStakz6vg==")
+df1 = spark.read.option('header', 'true') \
+                .option('delimiter', ',') \
+                .csv(adls_path + '/Log.csv')
+display(df1)
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+account_name = "storee2"
+container_name = "txns"
+relative_path = "walmart"
+adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path)
+spark.conf.set("fs.azure.account.auth.type.%s.dfs.core.windows.net" %account_name, "SharedKey")
+spark.conf.set("fs.azure.account.key.%s.dfs.core.windows.net" %account_name ,"WzJUzTZslXiJREQSFJh7Pxx7C53ILW4LNu4HLGCfNbJcsrTBoyuwtyGRVhJiMGABzD5A/xvwirjE+AStakz6vg==")
+txns = spark.read.option('header', 'false') \
+                .option('delimiter', ',') \
+                .csv(adls_path + '/txnsSmall')
+display(txns)
+
+txnDataDF = spark.read.option('header', 'false') \
+                .option('schema','txndata') \
+                .option('delimiter', ',') \
+                .csv(adls_path + '/txnsSmall')
+
+
+display(txnDataDF)
+
+txnDataDF = spark.read.schema(txnData).csv('txns.csv')
+
+
+txndata = StructType([
+    StructField("txnid",IntegerType(),True),
+    StructField("txndate",StringType(),True),
+    StructField("custid",IntegerType(),True),
+    StructField("amount",DoubleType(),True),
+    StructField("category",StringType(),True),
+    StructField("subcategory",StringType(),True),
+    StructField("city",StringType(),True),
+    StructField("state",StringType(),True),
+    StructField("txntype",StringType(),True)        
+])
+
+txnDataDF = spark.read.schema(txnData).option('delimiter',',').csv(adls_path + '/txnsSmall')
+txnDataDF.printSchema()
+txnDataDF.registerTempTable("txns1")
+
+
+spark.sql("select category,SUM(amount) from txns1 group by category").show();
+ spark.sql("SELECT SUM(amount) val, category FROM txns1 group by category order by val DESC limit 1").show();

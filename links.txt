@@ -1,0 +1,204 @@
+Video 1: https://www.youtube.com/watch?v=wfcWRAxRVBA
+Video 2: https://www.youtube.com/watch?v=WOwi0h_-dfA
+python 	https://drive.google.com/drive/folders/17ry2swC6d9MNsDYQpLdOe_BwLwpZCXkg?usp=sharing
+	https://www.w3resource.com/python-exercises/
+sql 	https://drive.google.com/drive/folders/1eOwrvO2KSaAwlF4Lb9bq03PZHSMdAMgc?usp=sharing
+	https://www.w3resource.com/mysql-exercises/
+biddata https://drive.google.com/drive/folders/1OWZrSQpfGGuN9F25WMohDGugofQCLPPM?usp=sharing
+linux https://www.youtube.com/watch?v=IVquJh3DXUA
+
+
+
+
+
+prashant.nair2050@gmail.com
+
+
+
+
+
+location sqoopdb.slbdh.cloudlabs.com
+username mannanbaigtigeranalytics
+password mannanbaigtigeranalyticsyj4s2
+database name mannanbaigtigeranalytics
+
+mysql -u mannanbaigtigeranalytics -pmannanbaigtigeranalyticsyj4s2 -h sqoopdb.slbdh.cloudlabs.com
+
+create table tigeremp(eid int, ename text, esal int, ecity text); create table walmarttransaction(txnid int, txndate text, custid int, amount double, category text, subcategory text, state text, city text, txntype text);
+insert into tigeremp values
+
+sqoop list-databases --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2
+
+2. List all Tables in the given database mannanbaigtigeranalytics
+sqoop list-tables --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2
+
+3. eval
+sqoop eval --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --query "select * from tigeremp"
+
+import 
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table tigeremp --target-dir tigeremp/download1 -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table
+
+subset
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table tigeremp --target-dir tigeremp/empMumbai --where "ecity ='leh'" -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --target-dir tigeremp/empNamesFromleh --query "select eid,ename from tigeremp where ecity ='leh' and \$CONDITIONS" -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table tigeremp --target-dir tigeremp/empDatainTabSep -m 1 --fields-terminated-by '\t'
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table tigeremp --target-dir tigeremp/download1 -m 1 --incremental append --check-column eid --last-value 4
+
+
+Transfer data from HDFS to the database
+1. Ensure you create an empty table which complies the schema as expected by the file data
+    create table empFromHDFS(eid int, ename text);
+2. Perform Sqoop Export Command
+sqoop export --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table empFromHDFS --export-dir /user/mannanbaigtigeranalytics/tigeremp/empNamesFromleh --input-fields-terminated-by ','
+sqoop export --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table empFromHDFS --export-dir /user/mannanbaigtigeranalytics/tigeranalytics/smallDataset --input-fields-terminated-by ','
+
+
+hive
+
+Demo 1: Creating a database and a table
+create database prashanttrainerdemo;
+use prashanttrainerdemo;
+create table employee
+(eid int,
+ ename string,
+ esal int,
+ ecity string)
+ ROW FORMAT DELIMITED
+ FIELDS TERMINATED BY ','
+ LINES TERMINATED BY '\n';
+show tables;
+select * from employee;
+Demo 2: Loading data 
+#From Local File System 
+
+LOAD DATA LOCAL INPATH 'empForTiger' INTO TABLE employee;
+select * from employee;
+
+LOAD DATA LOCAL INPATH '/user/mannanbaigtigeranalytics/empForTiger' INTO TABLE employee1;
+
+
+1. Create empFromTiger in HDFS home folder and upload the data
+2. Create external table
+create external table employeeExternal	create external table iris(Id int, SepalLengthCm float,PetalLengthCm float,PetalWidthCm float,Species string)	
+					ROW FORMAT DELIMITED
+					FIELDS TERMINATED BY ','
+					LINES TERMINATED BY '\n'
+					LOCATION '		
+(eid int,				(Id,int,
+ ename string,
+ esal int,
+ ecity string)
+ ROW FORMAT DELIMITED
+ FIELDS TERMINATED BY ','
+ LINES TERMINATED BY '\n'
+ LOCATION '/user/mannanbaigtigeranalytics/empForTiger';
+
+# tblproperties("skip.header.line.count"="1");
+3. Select 
+select * from employeeExternal where ecity ="delhi";
+
+
+
+sqoop export --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table walmarttransactions --export-dir /user/mannanbaigtigeranalytics/tigeranalytics/smallDataset/txnsSmall --input-fields-terminated-by ','
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table walmarttransactions --target-dir tigeranalytics/impoex --where "category ='Execrcise & Fitness'" -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --target-dir smallDataset/categoryexe --query "select * from walmarttransactions where category = 'Exercise & Fitness' and \$CONDITIONS" -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table walmarttransactions --target-dir walmarttransactions/exercise --where "category ='Execrcise & Fitness'" -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/aratimunottigeranalytics --username aratimunottigeranalytics --password aratimunottigeranalyticsdy3h2 --target-dir smallDataset/categoryReport  --query "select count(txntype) from walmarttransactions where txntype='credit' or txntype='cash' and \$CONDITIONS" -m 1
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --target-dir smallDataset/txntype --query "select count(txntype) from walmarttransactions where txntype='credit' or txntype='cash' and \$CONDITIONS" -m 1
+
+select amount from walmarttransactions group by category;
+
+txnid,txndate,custid
+
+sqoop export --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table walmattransaction --export dir /user/mannanbaigtigeranalytics/tigeranalytics/smallDataset --input-fields-terminated-by ','
+
+select txntype from walmarttransactions group by cash;
+
+	SELECT
+    txntype,
+    SUM(CASE WHEN txntype = 'cash'   THEN COUNT =+1 ELSE 0 END) cash,
+    SUM(CASE WHEN txntype = 'credit' THEN COUNT =+1 ELSE 0 END) credit
+FROM walmarttransactions
+GROUP BY
+    txntype;
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --target-dir smallDataset/categoryexe --query "select category, SUM(amount) from walmarttransactions where \$CONDITIONS group by category" -m 1
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/aratimunottigeranalytics --username aratimunottigeranalytics --password aratimunottigeranalyticsdy3h2 --target-dir smallDataset/revenueCountReport  --query "select category,sum(amount) from walmarttransactions where \$CONDITIONS group by category" -m 1
+select category, SUM(amount) from walmarttransactions group by category;
+
+
+hbase shell
+create 'mab','
+put 'mab',1,'employee:fnaem','mab'
+get 'mab',1
+
+put 'mab',1,'emp:ename','mannan'
+put 'mab',1,'emp:esal','4000'
+put 'mab',2,'emp:ename','Ali'
+put 'mab',2,'emp:esal','5000'
+scan 'mab'
+get 'mab',1
+Update:
+put 'mab',1,'emp:esal','5000'
+scan 'mab'
+get 'mab',1
+
+
+select AVG(Basepay) as Averagebase  
+from sal;
+
+select MAX(OvertimePay) as maxovertime
+from sal;
+
+select JobTitle from sal where EmployeeName = JOSEPH DRISCOLL;
+
+select SUM(TotalPayBenefits) from sal where EmployeeName = 'JOSEPH DRISCOLL';
+
+select AVG(Basepay) from sal where Year = '2011-2014';
+
+select count(DISTINCT JobTitle)
+from sal;
+select JobTitle, count(JobTitle) as cnt
+from sal
+group by JobTitle
+order by cnt desc;
+
+
+# 1. Use FTP to load MySQL Driver (jar file)
+# 2. Start Pyspark using the following command
+#    pyspark --jars "/mnt/home/mannanbaigtigeranalytics/mysql-connector-java-8.0.27.jar"
+#
+# urlMySQL = "jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics"
+# propertiesForMySQL = {"driver":"com.mysql.jdbc.Driver" , "user":"mannanbaigtigeranalytics" ,"password":"mannanbaigtigeranalyticsyj4s2"}
+# employeeDF = spark.read.jdbc(url=urlMySQL , table="tigeremp", properties=propertiesForMySQL)
+
+
+
+
+SET autocommit=0 ; source create_mavenmovies.sql ; COMMIT ;
+
+mysql -u username -p'password' dbname < filename.sql
+
+
+mysql -u mannanbaigtigeranalytics -pmannanbaigtigeranalyticsyj4s2 -h sqoopdb.slbdh.cloudlabs.com mannanbaigtigeranalytics < create_mavenmovies.sql
+
+mysql -u mannanbaigtigeranalytics -pmannanbaigtigeranalyticsyj4s2 -h sqoopdb.slbdh.cloudlabs.com mannanbaigtigeranalytics source create_mavenmovies.sql
+
+sqoop import --connect \
+jdbc:mysql://127.0.0.1:3306/database_name_in_mysql \
+ --username root --password cloudera \
+ --table table_name_in_mysql \
+ --hive-import --hive-table database_name_in_hive.table_name_in_hive \
+ --m 1 
+
+sqoop import --connect jdbc:mysql://sqoopdb.slbdh.cloudlabs.com/mannanbaigtigeranalytics --username mannanbaigtigeranalytics --password mannanbaigtigeranalyticsyj4s2 --table customer --target-dir customer" -m 1

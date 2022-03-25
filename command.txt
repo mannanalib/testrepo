@@ -1,0 +1,32 @@
+conda create --name pysparkenv3 python=3.7.11
+conda activate pysparkenv3
+conda install -c conda-forge findspark
+conda install jupyter
+jupyter notebook
+
+
+& in this 
+from pyspark.sql import SparkSession
+spark=SparkSession.builder.appName("Test").getOrCreate()
+sc=spark.sparkContext
+change test to test1
+
+
+
+
+
+HIVE
+================================================================
+
+import pandas as pd
+import numpy as np
+
+data = pd.read_csv('C:\\Users\mannan.baig\Downloads\salData.csv')
+
+data.to_csv('C:\\Users\mannan.baigx\Downloads\salData_TSV.csv',sep='\t',index=False)
+
+select MAX(OvertimePay) as maxovertime from sal;
+
+select count(*) Total_count from (select count(JobTitle) JobTitle_Count from sal where year = 2013 group by JobTitle having JobTitle_Count = 1) sal;
+
+select count(*) Total_Count from sal where JobTitle LIKE '%Chief%';
